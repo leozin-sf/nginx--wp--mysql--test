@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   # --- Banco de dados MySQL ---
@@ -69,6 +67,9 @@ services:
       - wp_network
 
   # --- Nginx (Load Balancer) ---
+  # O arquivo nginx.conf é montado a partir de ./nginx.conf
+  # Para variar o número de instâncias, basta substituir esse arquivo
+  # antes de subir o nginx (ver scripts/run_tests.sh).
   nginx:
     image: nginx:alpine
     container_name: nginx
@@ -83,18 +84,19 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     networks:
       - wp_network
-  
-  # Locust
+
+  # --- Locust (load generator) ---
+  # Usado em modo headless via docker compose run, controlado pelo script.
   locust:
-    image: locustio/locust
+    image: locustio/locust:2.31.5
     container_name: locust
     depends_on:
       - nginx
     ports:
       - "8089:8089"
     volumes:
-      - ./locustfile.py:/mnt/locust/locustfile.py
-    command: -f /mnt/locust/locustfile.py --host=http://nginx
+      - ./locust:/mnt/locust
+      - ./resultados:/mnt/resultados
     networks:
       - wp_network
 
