@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="490.0" y="34.0" font-size="22" font-weight="bold" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">Latência p95 — Post com imagem ~300KB</text>
+<text x="490.0" y="542.0" font-size="14" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">Número de usuários</text>
+<g transform="translate(24,280.0) rotate(-90)"><text x="0.0" y="0.0" font-size="14" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">p95 de resposta (s)</text></g>
+<line x1="90" y1="450" x2="950" y2="450" stroke="#333" stroke-width="1.2"/>
+<line x1="90" y1="450" x2="90" y2="70" stroke="#333" stroke-width="1.2"/>
+<line x1="90" y1="450.0" x2="950" y2="450.0" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="454.0" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">0.0</text>
+<line x1="90" y1="374.0" x2="950" y2="374.0" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="378.0" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">0.7</text>
+<line x1="90" y1="298.0" x2="950" y2="298.0" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="302.0" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">1.4</text>
+<line x1="90" y1="222.0" x2="950" y2="222.0" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="226.0" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">2.1</text>
+<line x1="90" y1="146.0" x2="950" y2="146.0" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="150.0" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">2.8</text>
+<line x1="90" y1="70.0" x2="950" y2="70.0" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="74.0" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">3.5</text>
+<rect x="134.5" y="443.9" width="38.0" height="6.1" fill="#a8d0e6" stroke="#333" stroke-width="0.8"/>
+<rect x="176.5" y="443.8" width="38.0" height="6.2" fill="#fde2a7" stroke="#333" stroke-width="0.8"/>
+<rect x="218.5" y="443.8" width="38.0" height="6.2" fill="#f4a6a6" stroke="#333" stroke-width="0.8"/>
+<text x="197.5" y="474.0" font-size="12" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">12</text>
+<rect x="349.5" y="444.1" width="38.0" height="5.9" fill="#a8d0e6" stroke="#333" stroke-width="0.8"/>
+<rect x="391.5" y="443.9" width="38.0" height="6.1" fill="#fde2a7" stroke="#333" stroke-width="0.8"/>
+<rect x="433.5" y="444.1" width="38.0" height="5.9" fill="#f4a6a6" stroke="#333" stroke-width="0.8"/>
+<text x="412.5" y="474.0" font-size="12" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">48</text>
+<rect x="564.5" y="240.7" width="38.0" height="209.3" fill="#a8d0e6" stroke="#333" stroke-width="0.8"/>
+<rect x="606.5" y="119.6" width="38.0" height="330.4" fill="#fde2a7" stroke="#333" stroke-width="0.8"/>
+<rect x="648.5" y="119.6" width="38.0" height="330.4" fill="#f4a6a6" stroke="#333" stroke-width="0.8"/>
+<text x="627.5" y="474.0" font-size="12" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">300</text>
+<rect x="779.5" y="240.7" width="38.0" height="209.3" fill="#a8d0e6" stroke="#333" stroke-width="0.8"/>
+<text x="842.5" y="474.0" font-size="12" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">500</text>
+<rect x="750" y="42" width="14" height="14" fill="#a8d0e6" stroke="#333" stroke-width="0.6"/>
+<text x="772.0" y="53.0" font-size="12" font-weight="normal" text-anchor="start" font-family="Arial, sans-serif" fill="#222">1 instância</text>
+<rect x="750" y="64" width="14" height="14" fill="#fde2a7" stroke="#333" stroke-width="0.6"/>
+<text x="772.0" y="75.0" font-size="12" font-weight="normal" text-anchor="start" font-family="Arial, sans-serif" fill="#222">2 instâncias</text>
+<rect x="750" y="86" width="14" height="14" fill="#f4a6a6" stroke="#333" stroke-width="0.6"/>
+<text x="772.0" y="97.0" font-size="12" font-weight="normal" text-anchor="start" font-family="Arial, sans-serif" fill="#222">3 instâncias</text>
+</svg>

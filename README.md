@@ -1,6 +1,6 @@
 # Trabalho 3 — Testes de carga com Locust + WordPress
 
-Bateria de **27 testes** (3 cenários × 3 quantidades de usuários × 3 quantidades de instâncias) usando Locust contra um cluster WordPress balanceado por Nginx.
+Bateria de **36 testes** (4 cenários × 3 quantidades de usuários × 3 quantidades de instâncias) usando Locust contra um cluster WordPress balanceado por Nginx.
 
 ## Estrutura do projeto
 
@@ -13,9 +13,9 @@ Bateria de **27 testes** (3 cenários × 3 quantidades de usuários × 3 quantid
 │   ├── nginx_2.conf            # 2 backends
 │   └── nginx_3.conf            # 3 backends
 ├── locust/
-│   └── locustfile.py           # script de carga (3 cenários)
+│   └── locustfile.py           # script de carga (3 cenários + híbrido)
 ├── scripts/
-│   ├── run_tests.sh            # executa os 27 testes
+│   ├── run_tests.sh            # executa os 36 testes
 │   └── gerar_graficos.py       # gera gráficos a partir dos CSVs
 ├── resultados/                 # CSVs do Locust (criado pelos testes)
 └── graficos/                   # PNGs gerados (criado pelo script Python)
@@ -70,16 +70,24 @@ http://localhost/?p=3
 http://localhost/?p=4
 ```
 
-### 4. Rodar os 27 testes
+### 4. Rodar os 36 testes
 
 ```bash
 chmod +x scripts/run_tests.sh
 ./scripts/run_tests.sh
 ```
 
-Cada teste dura 60s, mais alguns segundos de setup. Total: **~30 a 40 minutos**.
+Cada teste dura 75s, mais alguns segundos de setup. Total: **~50 a 60 minutos**.
 
 Os resultados ficam em `resultados/` no formato `<cenario>_u<usuarios>_i<instancias>_stats.csv`.
+
+Configuracao padrao calibrada para um subsistema Linux com **6 GB de RAM** e **6 nucleos**:
+
+- usuarios: `12`, `48`, `96`
+- spawn rate: `6`
+- wait time por usuario: `1.5s` a `3.0s`
+- metrica principal de latencia: `p95`
+- faixa de falhas desejada para testes pesados e hibridos: entre `1%` e `12%`
 
 ### 5. Gerar os gráficos
 
@@ -88,10 +96,11 @@ python3 scripts/gerar_graficos.py
 ```
 
 Saída em `graficos/`:
-- `tempo_img1mb.png`, `tempo_text400.png`, `tempo_img300.png` — tempo de resposta vs usuários
-- `rps_img1mb.png`, `rps_text400.png`, `rps_img300.png` — RPS vs número de instâncias
+- `p95_*.png` — latência `p95` vs usuários
+- `falhas_*.png` — taxa de falhas vs usuários, com linha de referência de `12%`
+- `rps_*.png` — RPS vs número de instâncias
 
-O script também imprime uma tabela-resumo no console.
+O script também imprime uma tabela-resumo no console com `p95`, `RPS`, `falhas %` e um status para destacar quando um teste pesado/híbrido ultrapassa `12%`.
 
 ### 6. Encerrar o ambiente
 
@@ -101,8 +110,8 @@ docker compose down -v   # -v remove os volumes (zera o WordPress)
 
 ## Dicas e troubleshooting
 
-**1000 usuários travando seu PC?**
-É normal — uma única instância WordPress não aguenta 1000 conexões simultâneas. Os timeouts e falhas fazem parte da medição. Se quiser reduzir, edite `USERS=(10 100 1000)` em `run_tests.sh`.
+**Quer subir ou descer a carga?**
+Edite `USERS=(12 48 96)` em `scripts/run_tests.sh`. Para a sua maquina, esses valores sao um ponto de partida mais realista do que `10 100 1000`.
 
 **Permissão negada no docker compose?**
 Adicione seu usuário ao grupo docker: `sudo usermod -aG docker $USER` e faça logout/login.
