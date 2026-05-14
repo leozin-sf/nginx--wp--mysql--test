@@ -10,6 +10,8 @@ Cenarios suportados:
 
 import os
 import random
+import re
+from urllib.parse import urlparse
 from locust import HttpUser, task, between
 
 SCENARIO = os.getenv("SCENARIO", "img1mb")
@@ -37,6 +39,8 @@ HYBRID_FLOW = [
     ("img300", 3),
 ]
 
+IMG_SRC_RE = re.compile(r'<img[^>]+src=["\']([^"\']+)["\']', re.IGNORECASE)
+
 
 class WordpressUser(HttpUser):
     # Um intervalo um pouco maior ajuda a estabilizar os testes pesados
@@ -55,4 +59,28 @@ class WordpressUser(HttpUser):
             target = SCENARIO
 
         # name fixa o rotulo nas estatisticas independentemente do ID real.
-        self.client.get(TARGET_PATHS[target], name=f"post_{target}")
+        with self.client.get(TARGET_PATHS[target], name=f"post_{target}", catch_response=True) as response:
+            if response.status_code >= 400:
+                response.failure(f"Falha ao carregar post {target}: {response.status_code}")
+                return
+
+            for asset_path in self._extract_image_paths(response.text):
+                self.client.get(asset_path, name=f"asset_{target}")
+
+    def _extract_image_paths(self, html):
+        image_paths = []
+        for src in IMG_SRC_RE.findall(html or ""):
+            parsed = urlparse(src)
+            if parsed.scheme and parsed.netloc:
+                path = parsed.path or "/"
+                if parsed.query:
+                    path = f"{path}?{parsed.query}"
+            else:
+                path = src
+
+            if not path.startswith("/"):
+                path = f"/{path.lstrip('./')}"
+
+            image_paths.append(path)
+
+        return image_paths

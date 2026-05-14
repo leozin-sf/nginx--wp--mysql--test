@@ -1,6 +1,6 @@
 # Trabalho 3 — Testes de carga com Locust + WordPress
 
-Bateria de **36 testes** (4 cenários × 3 quantidades de usuários × 3 quantidades de instâncias) usando Locust contra um cluster WordPress balanceado por Nginx.
+Bateria principal de **36 testes** (4 cenários × 3 cargas × 3 quantidades de instâncias) usando Locust contra um cluster WordPress balanceado por Nginx, com uma etapa anterior de calibração da carga pesada.
 
 ## Estrutura do projeto
 
@@ -15,10 +15,10 @@ Bateria de **36 testes** (4 cenários × 3 quantidades de usuários × 3 quantid
 ├── locust/
 │   └── locustfile.py           # script de carga (3 cenários + híbrido)
 ├── scripts/
-│   ├── run_tests.sh            # executa os 36 testes
+│   ├── run_tests.sh            # calibra a carga pesada e executa a bateria principal
 │   └── gerar_graficos.py       # gera gráficos a partir dos CSVs
 ├── resultados/                 # CSVs do Locust (criado pelos testes)
-└── graficos/                   # PNGs gerados (criado pelo script Python)
+└── graficos/                   # SVGs gerados (criado pelo script Python)
 ```
 
 ## Pré-requisitos
@@ -70,20 +70,23 @@ http://localhost/?p=3
 http://localhost/?p=4
 ```
 
-### 4. Rodar os 36 testes
+### 4. Rodar a calibração e a bateria principal
 
 ```bash
 chmod +x scripts/run_tests.sh
 ./scripts/run_tests.sh
 ```
 
-Cada teste dura 75s, mais alguns segundos de setup. Total: **~50 a 60 minutos**.
+O script primeiro roda testes pesados de calibração para escolher a carga alta de referência. Em seguida executa a bateria principal com cargas leve, média e pesada.
+
+Cada teste dura 75s, mais alguns segundos de setup. O tempo total varia conforme a carga pesada escolhida.
 
 Os resultados ficam em `resultados/` no formato `<cenario>_u<usuarios>_i<instancias>_stats.csv`.
 
 Configuracao padrao calibrada para um subsistema Linux com **6 GB de RAM** e **6 nucleos**:
 
-- usuarios: `12`, `48`, `96`
+- usuarios leve/medio: `12`, `48`
+- usuarios pesados candidatos: `300`, `500`
 - spawn rate: `6`
 - wait time por usuario: `1.5s` a `3.0s`
 - metrica principal de latencia: `p95`
@@ -96,11 +99,11 @@ python3 scripts/gerar_graficos.py
 ```
 
 Saída em `graficos/`:
-- `p95_*.png` — latência `p95` vs usuários
-- `falhas_*.png` — taxa de falhas vs usuários, com linha de referência de `12%`
-- `rps_*.png` — RPS vs número de instâncias
+- `p95_por_peso_u*.svg` — latência `p95` por peso do conteúdo, mantendo o mesmo número de usuários
+- `falhas_por_peso_u*.svg` — taxa de falhas por peso do conteúdo, com linha de referência de `12%`
+- `rps_por_peso_u*.svg` — throughput por peso do conteúdo, mantendo o mesmo número de usuários
 
-O script também imprime uma tabela-resumo no console com `p95`, `RPS`, `falhas %` e um status para destacar quando um teste pesado/híbrido ultrapassa `12%`.
+O script também imprime uma tabela-resumo ordenada por carga (`leve`, `média`, `pesada`), instâncias e peso do conteúdo.
 
 ### 6. Encerrar o ambiente
 
@@ -111,7 +114,7 @@ docker compose down -v   # -v remove os volumes (zera o WordPress)
 ## Dicas e troubleshooting
 
 **Quer subir ou descer a carga?**
-Edite `USERS=(12 48 96)` em `scripts/run_tests.sh`. Para a sua maquina, esses valores sao um ponto de partida mais realista do que `10 100 1000`.
+Edite `LIGHT_USERS`, `MEDIUM_USERS`, `HEAVY_USERS_PRIMARY` e `HEAVY_USERS_FALLBACK` em `scripts/run_tests.sh`.
 
 **Permissão negada no docker compose?**
 Adicione seu usuário ao grupo docker: `sudo usermod -aG docker $USER` e faça logout/login.

@@ -47,7 +47,7 @@ function build_large_text(int $targetBytes): string
 }
 
 $uploadDir = wp_upload_dir();
-$baseUrl = rtrim($uploadDir['baseurl'], '/');
+$baseUrl = rtrim($uploadDir['url'], '/');
 
 $img1mbUrl = $baseUrl . '/test-img-1mb.bmp';
 $img300Url = $baseUrl . '/test-img-300kb.bmp';

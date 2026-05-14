@@ -1,4 +1,4 @@
 Method,Name,Error,Occurrences
-GET,post_text400,HTTPError('500 Server Error: Internal Server Error for url: post_text400'),57
-GET,post_img1mb,HTTPError('500 Server Error: Internal Server Error for url: post_img1mb'),130
-GET,post_img300,HTTPError('500 Server Error: Internal Server Error for url: post_img300'),83
+GET,post_img300,CatchResponseError('Falha ao carregar post img300: 500'),51
+GET,post_img1mb,CatchResponseError('Falha ao carregar post img1mb: 500'),45
+GET,post_text400,CatchResponseError('Falha ao carregar post text400: 500'),27

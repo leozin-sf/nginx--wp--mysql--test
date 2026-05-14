@@ -1,2 +1,2 @@
 Method,Name,Error,Occurrences
-GET,post_img300,HTTPError('500 Server Error: Internal Server Error for url: post_img300'),135
+GET,post_img300,CatchResponseError('Falha ao carregar post img300: 500'),182

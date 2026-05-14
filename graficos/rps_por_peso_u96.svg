@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="580" viewBox="0 0 980 580">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="490.0" y="34.0" font-size="22" font-weight="bold" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">Throughput por peso de conteudo</text>
+<text x="490.0" y="58.0" font-size="12" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#556">Comparacao por peso com a mesma quantidade de usuarios: Carga media (96 usuarios)</text>
+<text x="490.0" y="562.0" font-size="14" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">Peso do conteudo</text>
+<g transform="translate(24,290.0) rotate(-90)"><text x="0.0" y="0.0" font-size="14" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">Requisicoes por segundo</text></g>
+<line x1="90" y1="470" x2="950" y2="470" stroke="#333" stroke-width="1.2"/>
+<line x1="90" y1="470" x2="90" y2="84" stroke="#333" stroke-width="1.2"/>
+<line x1="90" y1="470.0" x2="950" y2="470.0" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="474.0" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">0.0</text>
+<line x1="90" y1="392.8" x2="950" y2="392.8" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="396.8" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">17.9</text>
+<line x1="90" y1="315.6" x2="950" y2="315.6" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="319.6" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">35.9</text>
+<line x1="90" y1="238.4" x2="950" y2="238.4" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="242.4" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">53.8</text>
+<line x1="90" y1="161.2" x2="950" y2="161.2" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="165.2" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">71.8</text>
+<line x1="90" y1="84.0" x2="950" y2="84.0" stroke="#d8dee4" stroke-width="1"/>
+<text x="78.0" y="88.0" font-size="11" font-weight="normal" text-anchor="end" font-family="Arial, sans-serif" fill="#555">89.7</text>
+<rect x="134.5" y="138.0" width="38.0" height="332.0" fill="#c8e3c5" stroke="#333" stroke-width="0.8"/>
+<rect x="176.5" y="137.5" width="38.0" height="332.5" fill="#bdd7e4" stroke="#333" stroke-width="0.8"/>
+<rect x="218.5" y="135.4" width="38.0" height="334.6" fill="#fce5b6" stroke="#333" stroke-width="0.8"/>
+<text x="197.5" y="494.0" font-size="12" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">Imagem 300 KB</text>
+<rect x="349.5" y="303.3" width="38.0" height="166.7" fill="#c8e3c5" stroke="#333" stroke-width="0.8"/>
+<rect x="391.5" y="301.7" width="38.0" height="168.3" fill="#bdd7e4" stroke="#333" stroke-width="0.8"/>
+<rect x="433.5" y="304.7" width="38.0" height="165.3" fill="#fce5b6" stroke="#333" stroke-width="0.8"/>
+<text x="412.5" y="494.0" font-size="12" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">Texto 400 KB</text>
+<rect x="564.5" y="136.7" width="38.0" height="333.3" fill="#c8e3c5" stroke="#333" stroke-width="0.8"/>
+<rect x="606.5" y="135.5" width="38.0" height="334.5" fill="#bdd7e4" stroke="#333" stroke-width="0.8"/>
+<rect x="648.5" y="134.3" width="38.0" height="335.7" fill="#fce5b6" stroke="#333" stroke-width="0.8"/>
+<text x="627.5" y="494.0" font-size="12" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">Imagem 1 MB</text>
+<rect x="779.5" y="168.7" width="38.0" height="301.3" fill="#c8e3c5" stroke="#333" stroke-width="0.8"/>
+<rect x="821.5" y="172.0" width="38.0" height="298.0" fill="#bdd7e4" stroke="#333" stroke-width="0.8"/>
+<rect x="863.5" y="174.5" width="38.0" height="295.5" fill="#fce5b6" stroke="#333" stroke-width="0.8"/>
+<text x="842.5" y="494.0" font-size="12" font-weight="normal" text-anchor="middle" font-family="Arial, sans-serif" fill="#222">Hibrido</text>
+<rect x="750" y="50" width="14" height="14" fill="#c8e3c5" stroke="#333" stroke-width="0.6"/>
+<text x="772.0" y="61.0" font-size="12" font-weight="normal" text-anchor="start" font-family="Arial, sans-serif" fill="#222">1 instancia</text>
+<rect x="750" y="72" width="14" height="14" fill="#bdd7e4" stroke="#333" stroke-width="0.6"/>
+<text x="772.0" y="83.0" font-size="12" font-weight="normal" text-anchor="start" font-family="Arial, sans-serif" fill="#222">2 instancias</text>
+<rect x="750" y="94" width="14" height="14" fill="#fce5b6" stroke="#333" stroke-width="0.6"/>
+<text x="772.0" y="105.0" font-size="12" font-weight="normal" text-anchor="start" font-family="Arial, sans-serif" fill="#222">3 instancias</text>
+</svg>

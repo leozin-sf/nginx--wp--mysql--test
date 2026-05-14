@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
 # Script de execucao automatica dos testes de carga
-# 4 cenarios x 3 quantidades de usuarios x 3 quantidades de instancias = 36 testes
+# Primeiro calibra a carga pesada e depois executa a bateria principal.
 # =============================================================================
 
 set -e
@@ -29,11 +29,18 @@ HEAVY_WAIT_MAX_SECONDS="${HEAVY_WAIT_MAX_SECONDS:-2.0}"
 MAX_TUNING_ATTEMPTS="${MAX_TUNING_ATTEMPTS:-2}"
 SKIP_EXISTING="${SKIP_EXISTING:-1}"
 HEAVY_USERS_PRIMARY="${HEAVY_USERS_PRIMARY:-300}"
-HEAVY_USERS_FALLBACK="${HEAVY_USERS_FALLBACK:-500}"
+HEAVY_USERS_FALLBACK="${HEAVY_USERS_FALLBACK:-300}"
+LIGHT_USERS="${LIGHT_USERS:-24}"
+MEDIUM_USERS="${MEDIUM_USERS:-96}"
+HEAVY_DISCOVERY_INSTANCES="${HEAVY_DISCOVERY_INSTANCES:-1}"
+HEAVY_DISCOVERY_SCENARIOS=(${HEAVY_DISCOVERY_SCENARIOS:-img1mb hybrid})
+HEAVY_USER_CANDIDATES=("$HEAVY_USERS_PRIMARY")
+if [[ "$HEAVY_USERS_FALLBACK" -gt "$HEAVY_USERS_PRIMARY" ]]; then
+    HEAVY_USER_CANDIDATES+=("$HEAVY_USERS_FALLBACK")
+fi
 
 # Listas de variacao
 SCENARIOS=("img1mb" "text400" "img300" "hybrid")
-USERS=(12 48 "$HEAVY_USERS_PRIMARY")
 INSTANCES=(1 2 3)
 
 RESULTS_DIR="./resultados"
@@ -65,7 +72,7 @@ PY
 
 should_enforce_failure_cap() {
     local users="$2"
-    [[ "$users" -eq "$HEAVY_USERS_PRIMARY" ]]
+    [[ "${HEAVY_USERS_SELECTED:-$HEAVY_USERS_PRIMARY}" -eq "$users" ]]
 }
 
 stats_file_is_complete() {
@@ -183,25 +190,75 @@ PY
     echo "$failure_rate"
 }
 
-should_try_fallback_heavy() {
-    local users="$1"
-    local failure_rate="$2"
-
-    [[ "$users" -eq "$HEAVY_USERS_PRIMARY" ]] || return 1
-    [[ "$HEAVY_USERS_FALLBACK" -gt "$HEAVY_USERS_PRIMARY" ]] || return 1
-
-    python3 - "$failure_rate" "$MIN_FAILURE_RATE_HIGH" <<'PY'
+is_failure_in_band() {
+    local failure_rate="$1"
+    python3 - "$failure_rate" "$MIN_FAILURE_RATE_HIGH" "$MAX_FAILURE_RATE" <<'PY'
 import sys
-sys.exit(0 if float(sys.argv[1]) < float(sys.argv[2]) else 1)
+rate = float(sys.argv[1])
+min_rate = float(sys.argv[2])
+max_rate = float(sys.argv[3])
+sys.exit(0 if min_rate <= rate <= max_rate else 1)
 PY
 }
 
+discover_heavy_users() {
+    local selected="${HEAVY_USER_CANDIDATES[0]}"
+    local best_rate="-1"
+
+    echo "============================================================" >&2
+    echo "  Descobrindo a carga pesada de referencia" >&2
+    echo "  Candidatos: ${HEAVY_USER_CANDIDATES[*]}" >&2
+    echo "  Cenarios de calibracao: ${HEAVY_DISCOVERY_SCENARIOS[*]}" >&2
+    echo "============================================================" >&2
+
+    for candidate in "${HEAVY_USER_CANDIDATES[@]}"; do
+        for scenario in "${HEAVY_DISCOVERY_SCENARIOS[@]}"; do
+            local probe_tag="probe_${scenario}_u${candidate}_i${HEAVY_DISCOVERY_INSTANCES}"
+            local probe_prefix="/mnt/resultados/${probe_tag}"
+            local probe_stats_file="${RESULTS_DIR}/${probe_tag}_stats.csv"
+            local failure_rate
+
+            echo "[probe] cenario=$scenario | usuarios=$candidate | instancias=$HEAVY_DISCOVERY_INSTANCES" >&2
+            failure_rate="$(
+                tune_failure_band \
+                    "$scenario" \
+                    "$candidate" \
+                    "$HEAVY_DISCOVERY_INSTANCES" \
+                    "$probe_tag" \
+                    "$probe_prefix" \
+                    "$probe_stats_file"
+            )"
+
+            echo "[probe] taxa de falhas agregada: ${failure_rate}%" >&2
+
+            if python3 - "$failure_rate" "$best_rate" <<'PY'
+import sys
+sys.exit(0 if float(sys.argv[1]) > float(sys.argv[2]) else 1)
+PY
+            then
+                best_rate="$failure_rate"
+                selected="$candidate"
+            fi
+
+            if is_failure_in_band "$failure_rate"; then
+                echo "[probe] carga pesada escolhida: ${candidate} usuarios" >&2
+                echo "$candidate"
+                return
+            fi
+        done
+    done
+
+    echo "[probe] nenhuma combinacao caiu exatamente na faixa; usando melhor candidato observado: ${selected} usuarios" >&2
+    echo "$selected"
+}
+
 echo "============================================================"
-echo "  Iniciando bateria de 36 testes de carga"
+echo "  Iniciando calibracao e bateria principal de testes"
 echo "  Duracao por teste: $DURATION"
 echo "  p95 como metrica principal de latencia"
 echo "  Faixa de falhas desejada para carga alta/hibrida: ${MIN_FAILURE_RATE_HIGH}% a ${MAX_FAILURE_RATE}%"
 echo "  Limite de falhas para cenarios pesados/hibridos: ${MAX_FAILURE_RATE}%"
+echo "  Usuarios leve/medio candidatos: ${LIGHT_USERS}/${MEDIUM_USERS}"
 echo "  Carga pesada primaria: ${HEAVY_USERS_PRIMARY} usuarios"
 echo "  Fallback de carga pesada: ${HEAVY_USERS_FALLBACK} usuarios"
 echo "  Pular testes ja concluidos: ${SKIP_EXISTING}"
@@ -212,6 +269,15 @@ echo "============================================================"
 echo "[setup] Subindo MySQL e instancias do WordPress..."
 docker compose up -d mysql wordpress1 wordpress2 wordpress3
 sleep 5
+
+HEAVY_USERS_SELECTED="$(discover_heavy_users)"
+USERS=("$LIGHT_USERS" "$MEDIUM_USERS" "$HEAVY_USERS_SELECTED")
+
+echo "============================================================"
+echo "  Bateria principal: ${#SCENARIOS[@]} cenarios x ${#USERS[@]} cargas x ${#INSTANCES[@]} instancias = $((${#SCENARIOS[@]} * ${#USERS[@]} * ${#INSTANCES[@]})) testes"
+echo "  Carga pesada selecionada: ${HEAVY_USERS_SELECTED} usuarios"
+echo "  Cargas avaliadas: ${USERS[*]}"
+echo "============================================================"
 
 for INST in "${INSTANCES[@]}"; do
     echo ""
@@ -273,31 +339,6 @@ PY
                 fi
             fi
 
-            if [[ -f "$STATS_FILE" ]] && should_try_fallback_heavy "$U" "$FAILURE_RATE"; then
-                FALLBACK_TAG="${SCEN}_u${HEAVY_USERS_FALLBACK}_i${INST}"
-                FALLBACK_PREFIX="/mnt/resultados/${FALLBACK_TAG}"
-                FALLBACK_STATS_FILE="${RESULTS_DIR}/${FALLBACK_TAG}_stats.csv"
-
-                echo "[fallback] carga de ${U} usuarios nao gerou falhas suficientes; escalando para ${HEAVY_USERS_FALLBACK}"
-
-                if [[ "$SKIP_EXISTING" == "1" ]] && stats_file_is_complete "$FALLBACK_STATS_FILE"; then
-                    echo "[skip] fallback pesado ja concluido anteriormente"
-                else
-                    FALLBACK_FAILURE_RATE="$(
-                        tune_failure_band \
-                            "$SCEN" \
-                            "$HEAVY_USERS_FALLBACK" \
-                            "$INST" \
-                            "$FALLBACK_TAG" \
-                            "$FALLBACK_PREFIX" \
-                            "$FALLBACK_STATS_FILE"
-                    )"
-                    if [[ -f "$FALLBACK_STATS_FILE" ]]; then
-                        echo "[fallback] taxa de falhas agregada: ${FALLBACK_FAILURE_RATE}%"
-                    fi
-                fi
-            fi
-
             # pequena pausa para o sistema respirar entre testes
             sleep 3
         done
@@ -306,7 +347,7 @@ done
 
 echo ""
 echo "============================================================"
-echo "  TODOS OS 36 TESTES CONCLUIDOS"
+echo "  TODOS OS TESTES PRINCIPAIS CONCLUIDOS"
 echo "  Resultados em: $RESULTS_DIR"
 echo "============================================================"
 echo ""
